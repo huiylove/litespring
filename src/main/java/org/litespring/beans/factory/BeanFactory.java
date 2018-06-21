@@ -10,7 +10,13 @@ import org.litespring.beans.BeanDefinition;
  */
 public interface BeanFactory {
 
-	BeanDefinition getBeanDefinition(String beanID);
+	/**
+	 * 内部实现，不需要暴露给客户端
+	 * @param beanID
+	 * @return
+	 */
+//	@Deprecated
+//	BeanDefinition getBeanDefinition(String beanID);
 
 	Object getBean(String beanID);
 

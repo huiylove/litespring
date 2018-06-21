@@ -12,6 +12,10 @@ import org.dom4j.io.SAXReader;
 import org.litespring.beans.BeanDefinition;
 import org.litespring.beans.factory.BeanCreationException;
 import org.litespring.beans.factory.BeanDefinitionStoreException;
+<<<<<<< HEAD
+=======
+import org.litespring.beans.factory.config.ConfigurableBeanFactory;
+>>>>>>> beanfactory2
 import org.litespring.util.ClassUtils;
 
 /** 
