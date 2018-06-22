@@ -26,7 +26,6 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
 					"] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
 		}
 		this.singletonObjects.put(beanName, singletonObject);
-		
 	}
 
 	public Object getSingleton(String beanName) {
