@@ -1,7 +1,5 @@
 package org.litespring.beans.factory;
 
-import org.litespring.beans.BeanDefinition;
-
 /** 
  * 
  * @author : yuanhui 

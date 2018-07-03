@@ -1,4 +1,7 @@
 package org.litespring.beans;
+
+import java.util.List;
+
 /** 
  * 
  * @author : yuanhui 
@@ -11,8 +14,6 @@ public interface BeanDefinition {
 	public static final String SCOPE_SINGLETON = "singleton";
 	public static final String SCOPE_PROTOTYPE = "prototype";
 
-	String getBeanNameClass();
-
 	void setScope(String scope);
 
 	boolean isSingleton();
@@ -21,5 +22,8 @@ public interface BeanDefinition {
 
 	String getScope();
 	
+	List<PropertyValue> getPropertyValues();
+
+	String getBeanClassName();
 
 }
