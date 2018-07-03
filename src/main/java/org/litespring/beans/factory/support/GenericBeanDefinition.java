@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.litespring.beans.BeanDefinition;
+import org.litespring.beans.ConstructorArgument;
 import org.litespring.beans.PropertyValue;
 
 /** 
  * 
  * @author : yuanhui 
- * @date   : 2018Äê6ÔÂ11ÈÕ
+ * @date   : 2018ï¿½ï¿½6ï¿½ï¿½11ï¿½ï¿½
  * @version : 1.0
  */
 public class GenericBeanDefinition implements BeanDefinition {
@@ -22,6 +23,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 	
 	List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 	
+	private ConstructorArgument constructorArgument = new ConstructorArgument();
 	
 	public GenericBeanDefinition(String id, String beanClassName) {
 		this.id = id;
@@ -59,5 +61,22 @@ public class GenericBeanDefinition implements BeanDefinition {
 	public List<PropertyValue> getPropertyValues() {
 		return propertyValues;
 	}
+
+	@Override
+	public ConstructorArgument getConstructorArgument() {
+		return constructorArgument;
+	}
+
+	@Override
+	public String getID() {
+		return this.id;
+	}
+
+	@Override
+	public boolean hasConstructorArgumentValues() {
+		return !this.constructorArgument.isEmpty();
+	}
+	
+	
 
 }

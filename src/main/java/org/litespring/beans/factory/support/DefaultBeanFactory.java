@@ -25,7 +25,7 @@ import org.litespring.util.ClassUtils;
 /** 
  * 
  * @author : yuanhui 
- * @date   : 2018Äê6ÔÂ11ÈÕ
+ * @date   : 2018ï¿½ï¿½6ï¿½ï¿½11ï¿½ï¿½
  * @version : 1.0
  */
 public class DefaultBeanFactory  extends DefaultSingletonBeanRegistry
@@ -63,10 +63,11 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 	}
 	
 	public Object createBean(BeanDefinition bd){
-		//´´½¨Bean
+		
+		//å®ä¾‹åŒ–Bean
 		Object bean = this.instantiateBean(bd);
 		
-		//×é×°Bean
+		//è£…é…Bean
 		populateBean(bd,bean);
 		
 		return bean;
@@ -93,10 +94,9 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 				Object originalValue = pv.getValue();
 				Object resolvedValue = resolver.resolveValueIfNecessary(originalValue);
 				
-				//ÈçºÎ¸øbeanÉèÖÃÊôĞÔºÍÊôĞÔÖµ  Setter×¢Èë
 				for(PropertyDescriptor pd:pds){
 					if(pd.getName().equals(propertyName)){
-						//·´Éä
+						//åå°„
 						pd.getWriteMethod().invoke(bean,typeConvertor.convertIfNecessary(resolvedValue,pd.getPropertyType()));
 						break;
 					}
@@ -109,17 +109,23 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 	}
 	
 	
-	
-	
 	public Object instantiateBean(BeanDefinition bd){
-		ClassLoader cl = this.getBeanClassLoader();//ClassUtils.getDefaultClassLoader();
-		String beanClassName = bd.getBeanClassName();
-		try {
-			Class<?> clz = cl.loadClass(beanClassName);
-			return clz.newInstance();
-		} catch (Exception e) {
-			throw new BeanCreationException("Create bean for "+ beanClassName + "fail");
+		if(bd.hasConstructorArgumentValues()){
+			ConstructorResolver resolver = new ConstructorResolver(this);
+			return resolver.autowireConstructor(bd);
 		}
+		else{
+			ClassLoader cl = this.getBeanClassLoader();//ClassUtils.getDefaultClassLoader();
+			String beanClassName = bd.getBeanClassName();
+			try {
+				//ä¸ºä»€ä¹ˆä¸ç”¨Class.forName(); Class.forName()åˆå§‹åŒ–å‚æ•°æŒ‡å®šçš„ç±»ï¼Œæ‰§è¡Œé™æ€ä»£ç 
+				Class<?> clz = cl.loadClass(beanClassName);
+				return clz.newInstance();
+			} catch (Exception e) {
+				throw new BeanCreationException("Create bean for "+ beanClassName + "fail");
+			}
+		}
+		
 	}
 	
 	@Override

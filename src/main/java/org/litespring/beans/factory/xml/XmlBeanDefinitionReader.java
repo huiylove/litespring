@@ -6,11 +6,11 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.litespring.beans.BeanDefinition;
+import org.litespring.beans.ConstructorArgument;
 import org.litespring.beans.PropertyValue;
 import org.litespring.beans.factory.BeanDefinitionStoreException;
 import org.litespring.beans.factory.config.RuntimeBeanReference;
@@ -45,6 +45,11 @@ public class XmlBeanDefinitionReader {
 	
 	public static final String NAME_ATTRIBUTE = "name";
 	
+	public static final String CONSTRUCTOR_ARG_ATTRIBUTE = "constructor-arg";
+	
+	public static final String TYPE_ATTRIBUTE = "type";
+
+	
 	BeanDefinitionRegistry registry;
 	
 	protected final Log logger = LogFactory.getLog(getClass());
@@ -76,6 +81,7 @@ public class XmlBeanDefinitionReader {
 				if(scope!=null){
 					bd.setScope(scope);
 				}
+				parseConstructorArgElements(el,bd);
 				parsePropertyElement(el,bd);
 				this.registry.registerBeanDefinition(id, bd);
 			}
@@ -94,6 +100,30 @@ public class XmlBeanDefinitionReader {
 	}
 	
 	
+	public void parseConstructorArgElements(Element beanElem, BeanDefinition bd) {
+		Iterator iter = beanElem.elementIterator(CONSTRUCTOR_ARG_ATTRIBUTE);
+		while(iter.hasNext()){
+			Element ele = (Element)iter.next();
+			parseConstructorArgElement(ele,bd);
+		}
+	}
+	
+	public Object parseConstructorArgElement(Element ele,BeanDefinition bd){
+		String typeAttr = ele.attributeValue(TYPE_ATTRIBUTE);
+		String nameAttr = ele.attributeValue(NAME_ATTRIBUTE);
+		Object value = parsePropertyValue(ele, bd, null);
+		ConstructorArgument.ValueHolder valueHolder = new ConstructorArgument.ValueHolder(value);
+		if (StringUtils.hasLength(typeAttr)) {
+			valueHolder.setType(typeAttr);
+		}
+		if (StringUtils.hasLength(nameAttr)) {
+			valueHolder.setName(nameAttr);
+		}
+		bd.getConstructorArgument().addArgumentValue(valueHolder);	
+		return null;
+	}
+	
+	
 	
 	/**
 	 * @param beanElem <property name="" value=""> <property name="" ref="">
@@ -109,10 +139,8 @@ public class XmlBeanDefinitionReader {
 				return;
 			}
 			
-			
 			Object val = parsePropertyValue(propElem, bd, propertyName);
 			PropertyValue pv = new PropertyValue(propertyName, val);
-			
 			bd.getPropertyValues().add(pv);
 		}
 	}

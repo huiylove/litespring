@@ -20,10 +20,16 @@ public interface BeanDefinition {
 
 	boolean isPrototype();
 
-	String getScope();
+	public String getScope();
 	
-	List<PropertyValue> getPropertyValues();
+	public List<PropertyValue> getPropertyValues();
+	
+	public ConstructorArgument getConstructorArgument();
 
-	String getBeanClassName();
+	public String getBeanClassName();
+	
+	public String getID();
+	
+	public boolean hasConstructorArgumentValues();
 
 }
