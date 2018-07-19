@@ -15,9 +15,9 @@ import org.litespring.beans.ConstructorArgument.ValueHolder;
  */
 public class ConstructorArgument {
 	
-	//为什么使用linkedList???  插入效率高
+	//为什么使用linkedList  插入效率高
 	private final List<ValueHolder> argumentValues = new LinkedList<ValueHolder>();
-
+              
 	/**
 	 * Create a new empty ConstructorArgumentValues object.
 	 */

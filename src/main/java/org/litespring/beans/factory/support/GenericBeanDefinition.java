@@ -21,7 +21,7 @@ public class GenericBeanDefinition implements BeanDefinition {
 	private boolean prototype = false;
 	private String scope = SCOPE_DEFAULT;
 	
-	List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
+	private List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 	
 	private ConstructorArgument constructorArgument = new ConstructorArgument();
 	
