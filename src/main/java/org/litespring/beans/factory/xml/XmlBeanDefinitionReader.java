@@ -17,6 +17,7 @@ import org.litespring.beans.factory.config.RuntimeBeanReference;
 import org.litespring.beans.factory.config.TypedStringValue;
 import org.litespring.beans.factory.support.BeanDefinitionRegistry;
 import org.litespring.beans.factory.support.GenericBeanDefinition;
+import org.litespring.context.annotation.ClassPathBeanDefinitionScanner;
 import org.litespring.core.io.Resource;
 import org.litespring.util.ClassUtils;
 import org.litespring.util.StringUtils;
@@ -48,7 +49,12 @@ public class XmlBeanDefinitionReader {
 	public static final String CONSTRUCTOR_ARG_ATTRIBUTE = "constructor-arg";
 	
 	public static final String TYPE_ATTRIBUTE = "type";
+	
+	public static final String BEANS_NAMESPACE_URI = "http://www.springframework.org/schema/beans";
 
+	public static final String CONTEXT_NAMESPACE_URI = "http://www.springframework.org/schema/context";
+	
+	private static final String BASE_PACKAGE_ATTRIBUTE = "base-package";
 	
 	BeanDefinitionRegistry registry;
 	
@@ -70,9 +76,17 @@ public class XmlBeanDefinitionReader {
 			SAXReader reader = new SAXReader();
 			Document doc =  reader.read(is);
 			
-			Element root = doc.getRootElement();
+			Element root = doc.getRootElement();//<beans>标签
 			Iterator<Element> iter = root.elementIterator();
 			while(iter.hasNext()){
+				Element ele = (Element)iter.next();
+				String namespaceUri = ele.getNamespaceURI();
+				if(this.isDefaultNamespace(namespaceUri)){
+					parseDefaultElement(ele); //普通的bean
+				} else if(this.isContextNamespace(namespaceUri)){
+					parseComponentElement(ele); //例如<context:component-scan>
+				} 
+				/**
 				Element el = (Element) iter.next();
 				String id = el.attributeValue(ID_ATTRIBUTE);
 				String beanClassName = el.attributeValue(CLASS_ATTRIBUTE);
@@ -84,6 +98,7 @@ public class XmlBeanDefinitionReader {
 				parseConstructorArgElements(el,bd);
 				parsePropertyElement(el,bd);
 				this.registry.registerBeanDefinition(id, bd);
+				**/
 			}
 		} catch (Exception e) {
 			throw new BeanDefinitionStoreException("IOException parseing XML doucument "+resource.getDescription()+" fail ");
@@ -97,6 +112,32 @@ public class XmlBeanDefinitionReader {
 			}
 		}
 		
+	}
+	
+	private void parseComponentElement(Element ele) {
+		String basePackages = ele.attributeValue(BASE_PACKAGE_ATTRIBUTE);
+		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(registry);
+		scanner.doScan(basePackages);		
+	}
+	
+	
+	private void parseDefaultElement(Element ele) {
+		String id = ele.attributeValue(ID_ATTRIBUTE);
+		String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
+		BeanDefinition bd = new GenericBeanDefinition(id,beanClassName);
+		if (ele.attribute(SCOPE_ATTRIBUTE)!=null) {					
+			bd.setScope(ele.attributeValue(SCOPE_ATTRIBUTE));					
+		}
+		parseConstructorArgElements(ele,bd);
+		parsePropertyElement(ele,bd); 
+		this.registry.registerBeanDefinition(id, bd);
+		
+	}
+	public boolean isDefaultNamespace(String namespaceUri) {
+		return (!StringUtils.hasLength(namespaceUri) || BEANS_NAMESPACE_URI.equals(namespaceUri));
+	}
+	public boolean isContextNamespace(String namespaceUri){
+		return (!StringUtils.hasLength(namespaceUri) || CONTEXT_NAMESPACE_URI.equals(namespaceUri));
 	}
 	
 	
@@ -145,7 +186,7 @@ public class XmlBeanDefinitionReader {
 		}
 	}
 	
-	//bd参数有何用？？？？？
+	//bd参数有何用？？---后续有分支有判断
 	//不在此处直接实例化ref引用的对象
 	 //1、职责隔离原则  2、lazy load 延迟加载的思想，在getBean的时候去实例化
 	public Object parsePropertyValue(Element ele, BeanDefinition bd, String propertyName) {

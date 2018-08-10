@@ -13,7 +13,7 @@ public interface BeanDefinition {
 	public static final String SCOPE_DEFAULT = "";
 	public static final String SCOPE_SINGLETON = "singleton";
 	public static final String SCOPE_PROTOTYPE = "prototype";
-
+	
 	void setScope(String scope);
 
 	boolean isSingleton();
@@ -31,5 +31,9 @@ public interface BeanDefinition {
 	public String getID();
 	
 	public boolean hasConstructorArgumentValues();
-
+	
+	public void SetBeanClass(Class<?> cl);
+	
+	public Class<?> getBeanClass();
+	
 }

@@ -32,7 +32,13 @@ public class ConstructorResolver {
 		Class<?> beanClass = null;
 		try {
 			beanClass = this.beanFactory.getBeanClassLoader().loadClass(bd.getBeanClassName());
-			
+			//beanClass缓存实现
+//			beanClass =  bd.getBeanClass();
+//			if(beanClass==null){
+//				beanClass = this.beanFactory.getBeanClassLoader().loadClass(bd.getBeanClassName());
+//				//添加到BeanDefinition  
+//				bd.SetBeanClass(beanClass);
+//			}
 		} catch (ClassNotFoundException e) {
 			throw new BeanCreationException( bd.getID(), "Instantiation of bean failed, can't resolve class", e);
 		}	
@@ -42,7 +48,7 @@ public class ConstructorResolver {
 		
 		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this.beanFactory);
 		
-		ConstructorArgument cargs = bd.getConstructorArgument();
+		ConstructorArgument cargs = bd.getConstructorArgument();//获取bean的构造函数配置
 		SimpleTypeConverter typeConverter = new SimpleTypeConverter();
 		
 		for(int i=0; i<candidates.length;i++){
@@ -74,7 +80,6 @@ public class ConstructorResolver {
 		if(constructorToUse == null){
 			throw new BeanCreationException( bd.getID(), "can't find a apporiate constructor");
 		}
-		
 		
 		try {
 			return constructorToUse.newInstance(argsToUse);

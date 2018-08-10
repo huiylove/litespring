@@ -14,12 +14,13 @@ import org.litespring.beans.PropertyValue;
  * @version : 1.0
  */
 public class GenericBeanDefinition implements BeanDefinition {
-
+	
 	private String id;
 	private String beanClassName;
 	private boolean singleton = true;
 	private boolean prototype = false;
 	private String scope = SCOPE_DEFAULT;
+	private SoftReference<Class<?>> beanClass;
 	
 	private List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 	
@@ -29,7 +30,15 @@ public class GenericBeanDefinition implements BeanDefinition {
 		this.id = id;
 		this.beanClassName = beanClassName;
 	}
+	
+	public GenericBeanDefinition() {
+		
+	}
 
+	public void setBeanClassName(String className){
+		this.beanClassName = className;
+	}
+	
 	@Override
 	public String getBeanClassName() {
 		return beanClassName;
@@ -72,11 +81,25 @@ public class GenericBeanDefinition implements BeanDefinition {
 		return this.id;
 	}
 
+	public void setId(String id){
+		this.id = id;
+	}
+	
 	@Override
 	public boolean hasConstructorArgumentValues() {
 		return !this.constructorArgument.isEmpty();
 	}
-	
+
+	@Override
+	public void SetBeanClass(Class<?> cl) {
+		this.beanClass = new SoftReference<Class<?>>(cl);
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		return this.beanClass.get();
+	}
+
 	
 
 }

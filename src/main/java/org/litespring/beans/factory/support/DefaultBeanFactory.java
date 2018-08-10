@@ -65,7 +65,7 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 	public Object createBean(BeanDefinition bd){
 		
 		//实例化Bean
-		Object bean = this.instantiateBean(bd);
+		Object bean = this.instantiateBean(bd);//constructor.newInstance()
 		
 		//装配Bean
 		populateBean(bd,bean);
@@ -96,7 +96,7 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 				
 				for(PropertyDescriptor pd:pds){
 					if(pd.getName().equals(propertyName)){
-						//反射
+						//反射 setter注入
 						pd.getWriteMethod().invoke(bean,typeConvertor.convertIfNecessary(resolvedValue,pd.getPropertyType()));
 						break;
 					}
@@ -121,6 +121,17 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 				//为什么不用Class.forName(); Class.forName()初始化参数指定的类，执行静态代码
 				Class<?> clz = cl.loadClass(beanClassName);
 				return clz.newInstance();
+				//beanClass缓存实现
+//				Class<?> cacheBeanClass =  bd.getBeanClass();
+//				Class<?> beanClass;
+//				if(cacheBeanClass==null){
+//					beanClass = cl.loadClass(beanClassName);
+//					//添加到BeanDefinition  
+//					bd.SetBeanClass(beanClass);
+//				}else{
+//					beanClass = cacheBeanClass;
+//				}
+//				return beanClass.newInstance();
 			} catch (Exception e) {
 				throw new BeanCreationException("Create bean for "+ beanClassName + "fail");
 			}

@@ -12,8 +12,6 @@
     <property name="owner" value="yuanhui"/>
     <property name="version"  value="2"/>
 <!--     <property name="switch"  value="on"/> -->
-    
-    
   </bean> 
   
   <bean id="accountDao"  class="org.litespring.dao.v2.AccountDao">   
