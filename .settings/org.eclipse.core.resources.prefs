@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//src/main/java/org/litespring/beans/factory/annotation/AutowiredAnnotationProcessor.java=UTF-8
 encoding//src/main/java/org/litespring/beans/factory/support=UTF-8
 encoding//src/main/java/org/litespring/beans/factory/support/ConstructorResolver.java=UTF-8
 encoding//src/test/java/org/litespring/test/v1/ResourceTest.java=UTF-8
