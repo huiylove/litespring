@@ -38,7 +38,7 @@ public class AutowiredFieldElement extends InjectionElement {
 			if (value != null) {
 				
 				ReflectionUtils.makeAccessible(field);
-				field.set(target, value);
+				field.set(target, value);//利用反射赋值
 			}
 		}
 		catch (Throwable ex) {
