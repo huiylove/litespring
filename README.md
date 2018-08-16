@@ -11,3 +11,5 @@ l、BeanFactory、BeanDefinition、GenericBeanDefinition创建
 3、ApplicationContext、AbstractApplicationContext、ClassPathXmlApplicationContext、FileSystemXmlApplicationContext
 
 4、Resource、ClassPathResource、FileSystemResource
+
+

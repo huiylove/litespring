@@ -32,8 +32,14 @@ public interface BeanDefinition {
 	
 	public boolean hasConstructorArgumentValues();
 	
-	public void SetBeanClass(Class<?> cl);
-	
-	public Class<?> getBeanClass();
+//	public void SetBeanClass(Class<?> cl);
+//	
+//	public Class<?> getBeanClass();
+
+	boolean hasBeanClass();
+
+	Class<?> resolveBeanClass(ClassLoader beanClassLoader) throws ClassNotFoundException;
+
+	Class<?> getBeanClass() throws IllegalStateException;
 	
 }

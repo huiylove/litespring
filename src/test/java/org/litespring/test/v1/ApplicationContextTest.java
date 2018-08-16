@@ -20,7 +20,7 @@ public class ApplicationContextTest {
 	public void testClassPathGetBean() {
 		
 		ApplicationContext context = new ClassPathXmlApplicationContext("petstore-v1.xml");
-		context.setBeanClassLoader(null);//可以传classloader
+//		context.setBeanClassLoader(null);//可以传classloader
 		PetStoreService petService = (PetStoreService)context.getBean("petStore");
 		assertNotNull(petService);
 	}

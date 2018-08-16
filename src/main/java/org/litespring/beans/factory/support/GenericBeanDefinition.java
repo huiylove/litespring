@@ -17,10 +17,11 @@ public class GenericBeanDefinition implements BeanDefinition {
 	
 	private String id;
 	private String beanClassName;
+	private Class<?> beanClass;
 	private boolean singleton = true;
 	private boolean prototype = false;
 	private String scope = SCOPE_DEFAULT;
-	private SoftReference<Class<?>> beanClass;
+//	private SoftReference<Class<?>> beanClass;
 	
 	private List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
 	
@@ -90,14 +91,36 @@ public class GenericBeanDefinition implements BeanDefinition {
 		return !this.constructorArgument.isEmpty();
 	}
 
+//	@Override
+//	public void SetBeanClass(Class<?> cl) {
+//		this.beanClass = new SoftReference<Class<?>>(cl);
+//	}
+//
+//	@Override
+//	public Class<?> getBeanClass() {
+//		return this.beanClass.get();
+//	}
+
 	@Override
-	public void SetBeanClass(Class<?> cl) {
-		this.beanClass = new SoftReference<Class<?>>(cl);
+	public boolean hasBeanClass() {
+		return this.beanClass!=null;
 	}
 
 	@Override
-	public Class<?> getBeanClass() {
-		return this.beanClass.get();
+	public Class<?> resolveBeanClass(ClassLoader beanClassLoader) throws ClassNotFoundException {
+		String className = this.getBeanClassName();
+		if(className==null) 
+			return null;
+		Class<?> resolvedClass = beanClassLoader.loadClass(className);
+		this.beanClass = resolvedClass;
+		return resolvedClass;
+	}
+
+	public Class<?> getBeanClass() throws IllegalStateException{
+		if(this.beanClass==null){
+			throw new IllegalStateException("Bean Class name["+this.getBeanClassName()+"] has not resolved to an actual Class");
+		}
+		return this.beanClass;
 	}
 
 	
