@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.litespring.context.ApplicationContext;
 import org.litespring.context.support.ClassPathXmlApplicationContext;
-import org.litespring.dao.v3.AccountDao;
-import org.litespring.dao.v3.ItemDao;
-import org.litespring.service.v3.PetStoreService;
+import org.litespring.dao.v4.AccountDao;
+import org.litespring.dao.v4.ItemDao;
+import org.litespring.service.v4.PetStoreService;
 
 /** 
  * 

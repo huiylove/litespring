@@ -28,6 +28,7 @@ public class AutowiredAnnotationProcessorTest {
 	AccountDao accountDao = new AccountDao();
 	ItemDao itemDao = new ItemDao();
 	
+	//mock²Ù×÷
 	DefaultBeanFactory beanFactory = new DefaultBeanFactory(){
 		public Object resolveDependency(DependencyDescriptor descriptor){
 			if(descriptor.getDependencyType().equals(AccountDao.class)){
@@ -54,13 +55,13 @@ public class AutowiredAnnotationProcessorTest {
 		assertFieldExists(elements,"accountDao");
 		assertFieldExists(elements,"itemDao");
 		
-		PetStoreService petStore = new PetStoreService();
-		
-		injectionMetadata.inject(petStore);
-		
-		Assert.assertTrue(petStore.getAccountDao() instanceof AccountDao);
-		
-		Assert.assertTrue(petStore.getItemDao() instanceof ItemDao);
+//		PetStoreService petStore = new PetStoreService();
+//		
+//		injectionMetadata.inject(petStore);
+//		
+//		Assert.assertTrue(petStore.getAccountDao() instanceof AccountDao);
+//		
+//		Assert.assertTrue(petStore.getItemDao() instanceof ItemDao);
 	}
 	
 	private void assertFieldExists(List<InjectionElement> elements ,String fieldName){

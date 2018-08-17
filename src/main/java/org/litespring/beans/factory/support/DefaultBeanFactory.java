@@ -5,6 +5,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,11 @@ import org.litespring.beans.SimpleTypeConverter;
 import org.litespring.beans.TypeConverter;
 import org.litespring.beans.factory.BeanCreationException;
 import org.litespring.beans.factory.BeanDefinitionStoreException;
+import org.litespring.beans.factory.annotation.AutowiredAnnotationProcessor;
+import org.litespring.beans.factory.config.BeanPostProcessor;
 import org.litespring.beans.factory.config.ConfigurableBeanFactory;
 import org.litespring.beans.factory.config.DependencyDescriptor;
+import org.litespring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.litespring.util.ClassUtils;
 
 /** 
@@ -37,6 +41,9 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 	private final Map<String,BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String,BeanDefinition>(64);
 	private ClassLoader beanClassLoader;
 	
+	private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
+	
+	
 	@Override
 	public void registerBeanDefinition(String beanID, BeanDefinition bd) {
 		this.beanDefinitionMap.put(beanID,bd);
@@ -47,6 +54,7 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 		return this.beanDefinitionMap.get(beanID);
 	}
 
+	
 	@Override
 	public Object getBean(String beanID) {
 		BeanDefinition bd = this.getBeanDefinition(beanID);
@@ -76,6 +84,13 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 	
 	
 	public void populateBean(BeanDefinition bd,Object bean){
+		
+		//调用BeanPostProcessor
+		for(BeanPostProcessor processor:this.getBeanPostProcessors()){
+			if(processor instanceof InstantiationAwareBeanPostProcessor){
+				((AutowiredAnnotationProcessor) processor).postProcessPropertyValues(bean, bd.getBeanClassName());
+			}
+		}
 		
 		List<PropertyValue> pvs = bd.getPropertyValues();
 		
@@ -150,6 +165,16 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 		return (this.beanClassLoader != null) ? this.beanClassLoader : ClassUtils.getDefaultClassLoader();
 	}
 	
+	@Override
+	public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+		this.beanPostProcessors.add(beanPostProcessor);
+	}
+
+	@Override
+	public List<BeanPostProcessor> getBeanPostProcessors() {
+		return this.beanPostProcessors;
+	}
+	
 	
 	@Override
 	public Object resolveDependency(DependencyDescriptor descriptor) {
@@ -159,7 +184,7 @@ implements BeanDefinitionRegistry,ConfigurableBeanFactory{
 			resolveBeanClass(bd);//在getBeanClass之前
 			Class<?> beanClass = bd.getBeanClass();			
 			if(typeToMatch.isAssignableFrom(beanClass)){
-				return this.getBean(bd.getID());
+				return this.getBean(bd.getID());//根据beanId创建Bean
 			}
 		}
 		return null;

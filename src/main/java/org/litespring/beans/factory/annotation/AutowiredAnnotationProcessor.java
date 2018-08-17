@@ -12,6 +12,7 @@ import java.util.Set;
 import org.litespring.beans.BeansException;
 import org.litespring.beans.factory.BeanCreationException;
 import org.litespring.beans.factory.config.AutowireCapableBeanFactory;
+import org.litespring.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.litespring.core.annotation.AnnotationUtils;
 import org.litespring.util.ReflectionUtils;
 
@@ -21,7 +22,8 @@ import org.litespring.util.ReflectionUtils;
  * @date   : 2018��8��16��
  * @version : 1.0
  */
-public class AutowiredAnnotationProcessor {
+public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostProcessor {
+
 	private AutowireCapableBeanFactory beanFactory;
 	private String requiredParameterName = "required";
 	private boolean requiredParameterValue = true;
@@ -48,7 +50,7 @@ public class AutowiredAnnotationProcessor {
 						continue;
 					}
 					boolean required = determineRequiredStatus(ann);
-					currElements.add(new AutowiredFieldElement(field, required,beanFactory));
+					currElements.add(new AutowiredFieldElement(field,required,beanFactory));
 				}
 			}
 			for (Method method : targetClass.getDeclaredMethods()) {
@@ -91,6 +93,17 @@ public class AutowiredAnnotationProcessor {
 	public void setBeanFactory(AutowireCapableBeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
+
+	public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {		
+		InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
+		try {
+			metadata.inject(bean);//给bean注入相关的依赖
+		}
+		catch (Throwable ex) {
+			throw new BeanCreationException(beanName, "Injection of autowired dependencies failed", ex);
+		}		
+	}
+	
 	public Object beforeInitialization(Object bean, String beanName) throws BeansException {
 		//do nothing
 		return bean;
@@ -106,15 +119,5 @@ public class AutowiredAnnotationProcessor {
 	public boolean afterInstantiation(Object bean, String beanName) throws BeansException {
 		// do nothing
 		return true;
-	}
-
-	public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {		
-		InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
-		try {
-			metadata.inject(bean);
-		}
-		catch (Throwable ex) {
-			throw new BeanCreationException(beanName, "Injection of autowired dependencies failed", ex);
-		}		
 	}
 }
